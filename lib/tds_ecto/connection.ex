@@ -50,7 +50,7 @@ if Code.ensure_loaded?(Tds.Connection) do
           %Ecto.Query.Tagged{value: value, type: type} ->
             {value, type}
           %{__struct__: _} = value -> {value, nil}
-          %{} = value -> {json_library.encode!(value), :string}
+          %{} = value -> {json_library().encode!(value), :string}
           value ->
             param(value)
         end
@@ -476,7 +476,13 @@ if Code.ensure_loaded?(Tds.Connection) do
     end
 
     defp expr(%Ecto.Query.Tagged{value: binary, type: :uuid}, _sources, _query) when is_binary(binary) do
-      if String.contains?(binary, "-"), do: {:ok, binary} = Ecto.UUID.dump(binary)
+      binary =
+        if String.contains?(binary, "-") do
+          {:ok, binary} = Ecto.UUID.dump(binary)
+          binary
+        else
+          binary
+        end
       uuid(binary)
     end
 
@@ -703,7 +709,7 @@ if Code.ensure_loaded?(Tds.Connection) do
     defp column_options(_name, _type, opts) do
       null    = Keyword.get(opts, :null)
       pk      = Keyword.get(opts, :primary_key)
-      if pk == true, do: null = false
+      null = if pk == true, do: false, else: null
       [null_expr(null), pk_expr(pk)]
     end
 

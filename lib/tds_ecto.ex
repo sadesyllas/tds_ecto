@@ -60,9 +60,9 @@ defmodule Tds.Ecto do
   ## Custom MSSQL types
 
   def load({:embed, _} = type, binary) when is_binary(binary),
-    do: super(type, json_library.decode!(binary))
+    do: super(type, json_library().decode!(binary))
   def load(:map, binary) when is_binary(binary),
-    do: super(:map, json_library.decode!(binary))
+    do: super(:map, json_library().decode!(binary))
   def load(:boolean, 0), do: {:ok, false}
   def load(:boolean, 1), do: {:ok, true}
   def load(type, value), do: super(type, value)
@@ -74,8 +74,10 @@ defmodule Tds.Ecto do
 
     extra = ""
 
-    if lc_collate = Keyword.get(opts, :lc_collate) do
-      extra = extra <> " COLLATE='#{lc_collate}'"
+    extra = if lc_collate = Keyword.get(opts, :lc_collate) do
+      extra <> " COLLATE='#{lc_collate}'"
+    else
+      extra
     end
 
     {output, status} =

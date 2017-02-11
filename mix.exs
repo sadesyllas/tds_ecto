@@ -6,9 +6,9 @@ defmodule TDS.Ecto.Mixfile do
       app: :tds_ecto,
       version: "1.0.2",
       elixir: "~> 1.0",
-      deps: deps,
-      description: description,
-      package: package
+      deps: deps(),
+      description: description(),
+      package: package()
    ]
   end
 
@@ -22,7 +22,7 @@ defmodule TDS.Ecto.Mixfile do
   defp deps do
     [
       {:ecto, "~> 1.0.0"},
-      {:tds, "~> 0.5.4"},
+      {:tds, git: "https://github.com/sadesyllas/tds", branch: "fix-compilation-warnings"},
       {:poison, only: :test}
     ]
   end
